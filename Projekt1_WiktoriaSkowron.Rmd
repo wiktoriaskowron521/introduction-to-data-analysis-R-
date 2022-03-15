@@ -1,0 +1,332 @@
+---
+title: "Projekt 1"
+author: "Wiktoria Skowron"
+date: "08-01-2022"
+output: html_document
+---
+
+**ZADANIE 1.**\
+Wybrane zadania z zajęć ćwiczeniowych: \
+
+***Zadanie 1.*** Stworzyć funkcję, która na podstawie długości boków trójkąta odpowiada na pytanie o to, czy trójkąt jest ostrokątny, prostokątny lub rozwartokątny.\
+\
+Stworzona funkcja na początku pobiera argumenty, które są długościami trzech boków wybranego trójkąta. Następnie sprawdza, czy z danych boków można zbudować trójkąt (*suma długości dwóch najkrótszych boków musi być większa od długości najdłuższego boku trójkąta*) oraz określa, czy trójkąt jest prostokątny (*tw. Pitagorasa*), rozwartokątny czy ostrokątny. \
+```{r}
+#funkcja sprawdzająca odpowiednie warunki za pomocą konstrukcji if, else if, else
+
+trojkat<-function(a,b,c)
+  {if((a+b>c)&&(a+c>b)&&(b+c>a)) #sprawdzenie czy z danych bokow moze byc troj
+  {
+    if(a^2>b^2+c^2||b^2>a^2+c^2||c^2>b^2+a^2)
+    {return("rozwartokatny")}
+    
+    else if(a^2<b^2+c^2&&b^2<a^2+c^2&&c^2<b^2+a^2)
+    {return("ostrokatny")}
+    
+    else{return("prostokatny")}
+  }
+  else {print("Nie mozna zbudowac trojkata!")}
+}
+#test1
+trojkat(3,4,5)
+
+#test2
+trojkat(4,5,6)
+
+#test3
+trojkat(5,7,9)
+```
+
+
+***Zadanie 2.*** W pakiecie datasets znajduje sie wiele ciekawych zbiorów danych, a w szczegolności ramki danych mtcars i Orange.\
+a) Wykorzystaj komendy str() oraz help(), by dowiedzieć się więcej o tych zbiorach danych. Napisz w kilku słowach, co opisują w/w pliki z danymi.\
+\
+Zbiór danych "mtcars" opisuje paramentry 32 aut takie jak na przykład liczba cylindrów, spalanie, waga auta czy liczba koni mechanicznych.
+\
+Zbiór danych "Orange" opisuje dane odnośnie wzrostu drzew pomarańczowych takich jak wiek czy średnica pnia.
+```{r}
+str(mtcars) #funkcja str() drukuje zbiór danych
+str(Orange)
+help(mtcars) #funkcja help() wyświetla informacje o zbiorze danych
+help(Orange)
+```
+b) Wykorzystujac instrukcje warunkowe, wyświetl wylącznie auta posiadające 6 cylindrów.\
+\
+Instrukcja mtcars$cyl odnosi się do zmiennej "cyl" z ramki danych (zbioru danych) "mtcars".
+```{r}
+mtcars[mtcars$cyl==6,]
+```
+c) Jaką przeciętną liczbę koni mechanicznych (zmienna hp) posiadają auta o spalaniu (zmienna mpg) mniejszym niż 20.\
+```{r}
+mtcars[mtcars$mpg<20,]
+spalanie<-mtcars[mtcars$mpg<20,]
+mean(spalanie$hp)
+mean(mtcars[mtcars$mpg<20,]$hp) #jw tylko w jednej linii
+```
+d) Narysuj histogram (formuła hist()), dla wybranej zmiennej w zestawie danych Orange.\
+\
+Funkcja hist(x) rysuje histogram dla zmiennej x.
+```{r}
+hist(Orange$age,col="blue",main="Zależność wieku",xlab="wiek",ylab="ilość drzew w danym wieku")
+```
+\
+e) Narysuj wykres pudełkowy z wąsem (boxplot()) dla zmiennych mpg, hp i qsec ze zbioru mtcars.
+```{r}
+boxplot(mtcars$mpg)
+boxplot(mtcars$hp)
+boxplot(mtcars$qsec)
+```
+\
+\
+***Zadanie 3.*** \
+Wygeneruj 20 wyników rzutu kostką do gry. Nazwij te zmienna proba. Ile wynosi średnia i odchylenie standardowe?\
+Wygeneruj 100 wyników rzutu monetą. Nazwij te zmienna rzut (uwaga: jako 1 możesz oznaczyć orła, jako 0 reszkę). Ile wypadło orłów?\
+Wylosuj (bez zwracania) 10 liczb ze zbioru liczb naturalnych od 0 do 100.\
+Poznaj funkc- rnorm(), rt() oraz rpois(). Na wymyślonym przez siebie przykładzie, zastosuj jedną z w/w funkcji.\
+```{r}
+#generowanie rzutów kostką do gry
+proba=sample(x=1:6,size=20,replace=TRUE, prob=NULL)
+mean(proba) #średnia
+sd(proba) #odchylenie standardowe
+
+#generowanie 100 rzutów monetą
+rzut=sample(x=0:1,size=100,replace=TRUE, prob=NULL)#1-orzel,0-reszka
+sum(rzut) #określa ile orłóW wypadło
+
+#losowanie 10 liczb nat z przedzialu 0 do 100
+sample(0:100,10,replace=FALSE,prob=NULL)
+
+#przykład z funkcją rnorm()
+x <- seq(-5,5,by=0.001)
+plot(x, rnorm(x, 1,1), type="l", ylim=c(0,5),col="darkblue", lwd=3, cex.axis=1.5, cex.lab=1.5, lty=2)
+```
+\
+\
+***Zadanie 4.*** \
+Wśród krajów o PKB niższym od 5000$ (rozważyć dane za rok 1977), wyznaczyć po trzy kraje z Afryki, Europy i Azji, w których spodziewana długość życia jest największa.\
+```{r}
+#importowanie potrzebnych bibliotek
+library(dplyr)
+library(tidyr)
+library(gapminder)
+
+
+kraje_1977 <- gapminder %>% 
+  filter(year == "1977", gdpPercap < 5000, continent != "Americas") %>% #filtrowanie po roku, PKB, usunięciu danych odnośnie krajówobu Ameryk
+  group_by(continent) %>% #grupowanie po kontynentach
+  top_n(3, lifeExp) #wybór po 3 największych wartościach oczekiwanych długości życia
+kraje_1977
+```
+\
+\
+***Zadanie 5.***\
+Na jednym wykresie liniowym narysować, jak w rozważanych latach zmieniała się oczekiwana długość życia w trzech wybranych przez Ciebie krajach.\
+
+Wybrane kraje: Sri Lanka, Albania, Tunisia\
+
+```{r}
+#wyselekcjonowanie potrzebnych kolumn i wyfiltrowanie wybranych krajów
+kraj<-gapminder%>%
+  select(country, year,lifeExp)%>%
+  filter(country %in% c("Sri Lanka", "Albania", "Tunisia"))
+
+#Sri Lanka
+kraj1<-kraj%>% filter(country=="Sri Lanka") #filtr po kraju
+x1=kraj1$year #zdefiniowanie zmiennych do wykresu
+y1=kraj1$lifeExp
+plot(x1,y1,type="l",col="red",xlab="Rok",ylab="Oczekiwana długość życia") #tworzenie wykresu i opisanie osi, naniesienie danych
+
+#Albania
+kraj2<-kraj%>% filter(country=="Albania")#filtr po kraju
+x2=kraj2$year #zdefiniowanie zmiennych do wykresu
+y2=kraj2$lifeExp
+points(x2,y2,type="l",col="green") #naniesienie kolejnych danych na istniejący już wykres
+
+#Tunisia
+kraj3<-kraj%>% filter(country=="Tunisia")#filtr po kraju
+x3=kraj3$year #zdefiniowanie zmiennych do wykresu
+y3=kraj3$lifeExp
+points(x3,y3,type="l",col="blue") #naniesienie kolejnych danych na wykres
+  
+```
+
+\
+\
+******************************************************************************************************************
+\
+\
+**ZADANIE 2.**\
+
+Na podstawie pliku budzety2005.csv możemy odczytać między innymi następujące informacje o wybranych osobach:\
+-miesiąc przeprowadzenia badania,\
+-województwo,\
+-miejsce zamieszkania,\
+-typ zabudowania,\
+-wysokość rachunków,\
+-dochód na podstawie danych i pochodzący z GUS,\
+-główne źródło dochodu,\
+-płeć i wiek danej osoby,\
+-stan cywilny,\
+-wykształcenie,\
+-główne zajęcie (student/rolnik/...),\
+-liczba miesięcy bez pracy.\
+```{r}
+#wczytuję plik z budżetami, aby użyć go do dalszej analizy
+budzet <- read.csv(file = "budzety2005.csv", sep = ",")
+```
+Na podstawie zebranych danych chciałabym odpowiedzieć na następujące pytania badawcze:\
+\
+**1.** W jakim typie nieruchomości wskaźnik utrzymania 1 m<sup>2</sup> powierzchni (stosunek rachunków do powierzchni mieszkalnej) jest najmniejszy i największy?\
+```{r}
+#dodawanie wskaźnika rachunku do powierzchni mieszkalnej do ramki danych budzet
+budzet<-data.frame(budzet,wskaznik=budzet$bills/budzet$flatsize)
+#obliczenie wartosci potrzebnych do wnioskow
+#średnie rachunki ogółem
+mean(budzet$bills)
+
+#średnia powierzchni ogółem
+mean(budzet$flatsize)
+
+#drukowanie danych na podstawie krótych poniższe wskaźniki zostały obliczone
+aggregate(budzet[,15:16], list(budzet$buildtype), mean)
+
+#obliczenie wskaźników 
+indeks <- budzet %>%
+  group_by(buildtype) %>%
+  summarize(id = mean(wskaznik)) %>%
+  arrange(id)
+indeks[1:4,]
+```
+***Wnioski:*** *Z obliczeń wynika, że stosunek rachunków do powierzchni mieszkalnej jest największy w bloku mieszkalnym, a najniższy w domu wolnostojącym. Wskazane wartości mogą wynikać z faktu odchyleń od średniej dla ogółu danych. Średnie rachunki dla każdego typu zabudowania odbiegają maksymalnie 15,12% od średnich rachunków ogólnie, zaś średnie odchylenie wynosi 10,6%. W przypadku powierzchni najmniejsze z odchyleń wynosi 25,7%, a średnie odchylenie osiąga poziom 30,18%.* \
+![podsumowanie](summary.jpg){#id .class width=50% height=50%} \
+\
+\
+**2.** W jakim województwie ludzie osiągają najwyższe dochody? Czy najwyższe dochody są też skorelowane z największym odsetkiem osób z wyższym wykształceniem?\
+Czy w województwie z najniższymi dochodami jest najmniejszy odsetek osób z wyższym wykształceniem?\
+```{r}
+#badanie w których wojewodztwach są najwyzsze i najnizsze dochody
+dochod_wg_woj <- budzet %>%
+  group_by(wojregion) %>%
+  summarize(dochod = mean(totincGUS)) %>%
+  arrange(desc(dochod))
+dochod_wg_woj
+```
+*Najwyższe dochody osiągają ludzie mieszkający w województwie mazowieckim, a najniższe osoby z województwa lubuskiego.*\
+```{r}
+#obliczenie odsetku osób z wyższym wykształceniem w każdym z województw:
+
+#obliczenie liczby osób (biorących udział w badaniu) z wyższym wykształceniem z podziałem na wojewodztwa
+osobywyksz <- budzet %>%
+  filter(educ=="university")%>%
+  group_by(wojregion) %>%
+  count(educ)
+
+#obliczenie liczby osób z województw
+liczbawoj<-budzet %>%
+  group_by(wojregion)%>%
+  count(wojregion)
+
+osobywyksz<-data.frame(osobywyksz,liczbawoj[,2])
+osobywyksz<-data.frame(osobywyksz,odsetek=osobywyksz[,3]/osobywyksz[,4])
+
+library(formattable)
+odset<-osobywyksz%>%
+  mutate(odsetek=percent(round(odsetek,3)))%>%
+  arrange(desc(odsetek))
+odset
+
+```
+***Wnioski:****Na podstawie powyższych obliczeń można stwierdzić, że w województwie mazowieckim, w którym średnie dochody są najwyższe jest również największy odsetek osób z wyższym wykształceniem. W przypadku województwa o najniższych średnich dochodach (lubuskiego) sytuacja jest niejednoznaczna. Najmniejszy odsetek osób z wyższym wykształceniem jest w województwie kujawsko-pomorskim, gdzie średnie dochody są trzecimi z najniższych. *\
+*Powyższe obliczenia i zauważenia mogą świadczyć o istnieniu zależności między wysokością średnich dochodów, a odsetkiem osób z wyższym wykształceniem w poszczególnych województwach. Potwierdzeniem tej tezy mogą być następujące współczynniki korelacji oraz wykres:*\
+```{r}
+x=odset$odsetek
+y=dochod_wg_woj$dochod
+#korelacje
+pearson<-cor(x,y,method="pearson")
+percent(pearson)
+spearman<-cor(x,y,method="spearman")
+percent(spearman)
+#wykres
+plot(x,y,main = "Wykres zależności dochodów i odsetku osób z wyższym wykształceniem",
+     xlab = "Odsetek osób z wyższym wykształceniem",
+     ylab = "Średnie dochody")
+abline(lm(y ~ x), col = "red") #dopasowanie lini
+
+```
+\
+\
+**3.** Czy bycie w związku małżenskim wpływa na wysokość dochodu?\
+```{r}
+a<-aggregate(budzet[,21], list(budzet$sex), mean)
+a
+k<-a[1,2] #kobiety
+m<-a[2,2] #mężczyźni
+roznica<-(m-k)/k
+percent(roznica)
+```
+Dochody kobiet i mężczyzn są porównywalne z niewielką przewagą mężczyzn - dochody mężczyzn są o 0.55% wyższe niż dochody kobiet.
+\
+
+```{r}
+b<-aggregate(budzet[,21], list(budzet$sex,budzet$married), mean)
+b
+kn<-b[1,3] #dochody kobiet niezamężnych
+km<-b[3,3] #dochody kobiey zamężnych
+mn<-b[2,3] #dochody mężczyzn nieżonatych
+mm<-b[4,3] #dochody mężczyzn żonatych
+roznicak<-(km-kn)/kn #o tyle wieksze są dochody kobiet zameznych
+roznicam<-(mm-mn)/mn #o tyle większe są dochody mezczyzn zonatych
+percent(roznicak)
+percent(roznicam)
+
+```
+Niezależnie od płci dochody osób będących w związkach małżeńskich są większe niż osób niebędących w związkach.
+Dochody kobiet zamężnych są o 14,44% większe niż niezamężnych, a mężczyzn żonatych o 15,9% większe niż nieżonatych.\
+
+```{r}
+c<-aggregate(budzet[,21], list(budzet$married),mean)
+c
+married<-c[2,2]
+notmarried<-c[1,2]
+roznica<-(married-notmarried)/notmarried
+percent(roznica)
+```
+Osoby w związkach małżeńskich mają dochody o 15,05% wyższe niż osoby niebędące w związkach małżeńskich.\
+\
+
+**4.** Jakie źródło dochodu przeważa u osób mieszkających na wsiach i w miasteczkach do 20 tys mieszkańców z podziałem na grupy wiekowe:18-30, 31-59, 60+?\
+```{r}
+#grupa 18-30
+grupa18_30<- budzet %>%
+  filter(townsize %in% c("villages", "town up to 19,999"),age<=30,age>=18)%>%
+rename(zrodlo_dochodu=mainincHH)%>%
+  count(zrodlo_dochodu, sort=TRUE)
+
+a<-sum(grupa18_30[,2])
+
+grupa18_30<-data.frame(grupa18_30,procent=percent(grupa18_30[,2]/a))
+grupa18_30
+
+#grupa 31-59
+grupa31_59<- budzet %>%
+  filter(townsize %in% c("villages", "town up to 19,999"),age<=59,age>=31)%>%
+  rename(zrodlo_dochodu=mainincHH)%>%
+  count(zrodlo_dochodu, sort=TRUE)
+
+a<-sum(grupa31_59[,2])
+
+grupa31_59<-data.frame(grupa31_59,procent=percent(grupa31_59[,2]/a))
+grupa31_59
+
+#grupa 60+
+grupa60<- budzet %>%
+  filter(townsize %in% c("villages", "town up to 19,999"),age>=60)%>%
+  rename(zrodlo_dochodu=mainincHH)%>%
+  count(zrodlo_dochodu, sort=TRUE)
+
+a<-sum(grupa60[,2])
+
+grupa60<-data.frame(grupa60,procent=percent(grupa60[,2]/a))
+grupa60
+```
+***Wnioski:*** *W grupach wiekowych 18-30 oraz 31-59 jako główne źrodło dochodu przeważa praca fizyczna. Jednak w grupie 31-59 źródła dochodu są bardziej zróżnicowane na pracę fizyczną i umysłową, a także emerytury, renty i rolnictwo. W grupie osób 60+ znacznie przeważa dochód ze świadczeń emerytalnych. *
